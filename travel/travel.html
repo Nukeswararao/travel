@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wanderlust - Your Ultimate Travel Planner</title>
+    <!-- Tailwind CSS CDN for modern styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom styles for the scroll-snap and font */
+        html {
+            scroll-behavior: smooth;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .hero-section {
+            background-image: url('https://placehold.co/1920x1080/E5E7EB/1F2937?text=Your+Adventure+Awaits');
+            background-size: cover;
+            background-position: center;
+        }
+        /* Hide the initial output section */
+        .hidden-until-loaded {
+            display: none;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+    <!-- Header Section (Fixed at the top) -->
+    <header class="fixed top-0 left-0 w-full z-50 bg-white/80 backdrop-blur-sm shadow-md py-4 transition-all duration-300">
+        <nav class="container mx-auto flex justify-between items-center px-6">
+            <a href="#" class="text-3xl font-bold text-indigo-600">Wanderlust</a>
+            <!-- Desktop navigation links -->
+            <div class="hidden md:flex space-x-8 text-lg font-medium">
+                <a href="#plan" class="text-gray-600 hover:text-indigo-600 transition-colors">Plan a Trip</a>
+                <a href="#about" class="text-gray-600 hover:text-indigo-600 transition-colors">About Us</a>
+                <a href="#contact" class="text-gray-600 hover:text-indigo-600 transition-colors">Contact</a>
+            </div>
+            <!-- Mobile Menu Button -->
+            <button id="mobile-menu-button" class="md:hidden text-gray-600 hover:text-indigo-600 focus:outline-none">
+                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+            </button>
+        </nav>
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="hidden md:hidden bg-white/90 backdrop-blur-sm absolute w-full top-full shadow-lg">
+            <a href="#plan" class="block py-4 px-6 text-center text-gray-700 hover:bg-gray-100 transition-colors">Plan a Trip</a>
+            <a href="#about" class="block py-4 px-6 text-center text-gray-700 hover:bg-gray-100 transition-colors">About Us</a>
+            <a href="#contact" class="block py-4 px-6 text-center text-gray-700 hover:bg-gray-100 transition-colors">Contact</a>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section id="hero" class="hero-section min-h-screen flex items-center justify-center text-center p-6 text-gray-900">
+        <div class="bg-white/70 p-10 rounded-3xl backdrop-blur-sm max-w-4xl mx-auto shadow-xl transform transition-transform duration-500 hover:scale-105">
+            <h1 class="text-5xl md:text-6xl font-extrabold leading-tight mb-4">Plan Your Perfect Trip.</h1>
+            <h2 class="text-2xl md:text-3xl font-light mb-8">Discover a new way to travel.</h2>
+            <p class="text-lg md:text-xl max-w-2xl mx-auto mb-10">From scenic routes to hidden gems and comfortable stays, we've got you covered.</p>
+            <a href="#plan" class="bg-indigo-600 text-white font-bold py-4 px-8 rounded-full shadow-lg hover:bg-indigo-700 transition-transform transform hover:scale-110">Start Planning</a>
+        </div>
+    </section>
+
+    <!-- Trip Planner Section -->
+    <section id="plan" class="min-h-screen flex items-center justify-center bg-gray-100 p-8">
+        <div class="container mx-auto max-w-4xl text-center">
+            <h2 class="text-4xl md:text-5xl font-bold text-gray-900 mb-6">Create Your Itinerary</h2>
+            <form id="trip-planner-form" class="bg-white p-8 rounded-3xl shadow-lg border border-gray-200">
+                <div class="grid md:grid-cols-2 gap-6 mb-6">
+                    <div>
+                        <label for="start" class="block text-left text-lg font-medium text-gray-700 mb-2">Starting Place</label>
+                        <input type="text" id="start" placeholder="e.g., San Francisco" class="w-full px-6 py-4 rounded-full border-2 border-gray-300 focus:border-indigo-600 focus:ring focus:ring-indigo-200 transition-colors" required>
+                    </div>
+                    <div>
+                        <label for="destination" class="block text-left text-lg font-medium text-gray-700 mb-2">Destination</label>
+                        <input type="text" id="destination" placeholder="e.g., Los Angeles" class="w-full px-6 py-4 rounded-full border-2 border-gray-300 focus:border-indigo-600 focus:ring focus:ring-indigo-200 transition-colors" required>
+                    </div>
+                </div>
+                <button type="submit" id="plan-button" class="w-full bg-indigo-600 text-white font-bold py-4 px-10 rounded-full shadow-lg hover:bg-indigo-700 transition-colors transform hover:scale-105">
+                    Plan My Trip
+                </button>
+                <p id="loading-message" class="hidden mt-4 text-indigo-600 font-semibold animate-pulse">Planning your adventure...</p>
+            </form>
+
+            <!-- Itinerary and Results Section (Initially hidden) -->
+            <div id="results-section" class="hidden-until-loaded mt-12 text-left bg-white p-8 rounded-3xl shadow-lg border border-gray-200">
+                <h3 class="text-3xl font-bold text-gray-900 mb-6" id="results-title"></h3>
+                
+                <!-- Route Plan Section -->
+                <div class="mb-8">
+                    <h4 class="text-2xl font-semibold text-gray-800 mb-4">Route Plan</h4>
+                    <p id="route-text" class="text-gray-600 mb-4"></p>
+                    <img id="route-map" src="https://placehold.co/800x400/D1D5DB/374151?text=Route+Map+Placeholder" alt="Route Map" class="w-full rounded-2xl shadow-md">
+                </div>
+                
+                <!-- Food & Rest Stops Section -->
+                <div class="mb-8">
+                    <h4 class="text-2xl font-semibold text-gray-800 mb-4">Food & Rest Stops</h4>
+                    <ul id="food-list" class="list-disc list-inside space-y-2 text-gray-600">
+                        <!-- Items will be populated by JS -->
+                    </ul>
+                </div>
+                
+                <!-- Rooms for Stay Section -->
+                <div class="mb-8">
+                    <h4 class="text-2xl font-semibold text-gray-800 mb-4">Rooms for Stay</h4>
+                    <div id="rooms-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <!-- Items will be populated by JS -->
+                    </div>
+                </div>
+
+                <!-- Nearby Famous Places & Viewpoints Section -->
+                <div class="mb-8">
+                    <h4 class="text-2xl font-semibold text-gray-800 mb-4">Nearby Attractions & Viewpoints</h4>
+                    <div id="attractions-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <!-- Items will be populated by JS -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About and Contact Sections can be added here with more content -->
+    <section id="about" class="min-h-screen flex items-center justify-center bg-white p-8">
+        <div class="container mx-auto max-w-4xl text-center">
+            <h2 class="text-4xl md:text-5xl font-bold text-gray-900 mb-6">About Us</h2>
+            <p class="text-xl text-gray-600 mb-8">Wanderlust was born from a passion for exploration. Our goal is to make travel planning effortless, allowing you to focus on the journey itself.</p>
+        </div>
+    </section>
+
+    <!-- Footer Section -->
+    <footer class="bg-gray-800 text-white py-6 text-center">
+        <p>&copy; 2025 Wanderlust. All Rights Reserved.</p>
+    </footer>
+
+    <script>
+        // JavaScript for mobile menu toggle and form submission logic
+        document.addEventListener('DOMContentLoaded', () => {
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+            const tripPlannerForm = document.getElementById('trip-planner-form');
+            const planButton = document.getElementById('plan-button');
+            const loadingMessage = document.getElementById('loading-message');
+            const resultsSection = document.getElementById('results-section');
+            const resultsTitle = document.getElementById('results-title');
+            const routeText = document.getElementById('route-text');
+            const routeMap = document.getElementById('route-map');
+            const foodList = document.getElementById('food-list');
+            const roomsList = document.getElementById('rooms-list');
+            const attractionsList = document.getElementById('attractions-list');
+
+            // Mobile menu toggle functionality
+            mobileMenuButton.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+            });
+
+            // Handle form submission
+            tripPlannerForm.addEventListener('submit', (e) => {
+                e.preventDefault(); // Prevent the default form submission
+
+                const start = document.getElementById('start').value;
+                const destination = document.getElementById('destination').value;
+
+                // Check if both fields are filled
+                if (!start || !destination) {
+                    return; // Do nothing if fields are empty
+                }
+
+                // Show loading message and disable button
+                planButton.disabled = true;
+                planButton.classList.add('opacity-50', 'cursor-not-allowed');
+                loadingMessage.classList.remove('hidden');
+
+                // Simulate an API call with a delay
+                setTimeout(() => {
+                    // Populate the results section with mock data based on input
+                    resultsTitle.textContent = `Itinerary from ${start} to ${destination}`;
+                    
+                    // --- Dynamic Google Static Map Generation ---
+                    // Note: You must replace 'YOUR_API_KEY' with a valid Google Maps API Key
+                    const apiKey = "YOUR_API_KEY";
+                    const mapUrl = `https://maps.googleapis.com/maps/api/staticmap?size=800x400&markers=color:blue|label:S|${encodeURIComponent(start)}&markers=color:red|label:D|${encodeURIComponent(destination)}&key=${apiKey}`;
+                    
+                    routeMap.src = mapUrl;
+                    
+                    // --- Mock Data Generation for other sections ---
+                    const mockData = getMockItinerary(start, destination);
+                    routeText.textContent = mockData.route;
+
+                    // Populate Food & Rest Stops
+                    foodList.innerHTML = ''; // Clear previous results
+                    mockData.foodAndRest.forEach(item => {
+                        const li = document.createElement('li');
+                        li.textContent = item;
+                        foodList.appendChild(li);
+                    });
+
+                    // Populate Rooms for Stay
+                    roomsList.innerHTML = ''; // Clear previous results
+                    mockData.rooms.forEach(room => {
+                        const roomCard = `
+                            <div class="bg-gray-100 p-6 rounded-2xl shadow-sm border border-gray-200">
+                                <h5 class="font-semibold text-lg">${room.name}</h5>
+                                <p class="text-sm text-gray-500">${room.description}</p>
+                                <p class="text-sm font-bold text-indigo-600 mt-2">${room.price}</p>
+                            </div>
+                        `;
+                        roomsList.innerHTML += roomCard;
+                    });
+
+                    // Populate Nearby Attractions & Viewpoints
+                    attractionsList.innerHTML = ''; // Clear previous results
+                    mockData.attractions.forEach(attraction => {
+                        const attractionCard = `
+                            <div class="bg-gray-100 p-6 rounded-2xl shadow-sm border border-gray-200">
+                                <h5 class="font-semibold text-lg">${attraction.name}</h5>
+                                <p class="text-sm text-gray-500">${attraction.description}</p>
+                                <img src="${attraction.imageUrl}" alt="${attraction.name}" class="mt-4 rounded-xl shadow-md">
+                            </div>
+                        `;
+                        attractionsList.innerHTML += attractionCard;
+                    });
+                    
+                    // --- End Mock Data Generation ---
+
+                    // Show the results section with a fade-in effect
+                    resultsSection.classList.remove('hidden-until-loaded');
+                    resultsSection.style.opacity = 0;
+                    setTimeout(() => {
+                        resultsSection.style.transition = 'opacity 0.5s ease-in-out';
+                        resultsSection.style.opacity = 1;
+                    }, 50);
+
+                    // Re-enable the button and hide loading message
+                    planButton.disabled = false;
+                    planButton.classList.remove('opacity-50', 'cursor-not-allowed');
+                    loadingMessage.classList.add('hidden');
+                    
+                    // Scroll to the results section
+                    resultsSection.scrollIntoView({ behavior: 'smooth' });
+
+                }, 2000); // Simulate 2-second loading time
+            });
+
+            // A function to generate dynamic mock data based on input
+            function getMockItinerary(start, destination) {
+                const standardizedStart = start.toLowerCase();
+                const standardizedDest = destination.toLowerCase();
+
+                // Define a few specific mock scenarios
+                if (standardizedStart.includes('san francisco') && standardizedDest.includes('los angeles')) {
+                    return {
+                        route: 'Travel along the scenic Pacific Coast Highway (CA-1) for breathtaking ocean views. This route is longer but more beautiful.',
+                        foodAndRest: [
+                            'Lunch at Nepenthe in Big Sur for stunning coastal views.',
+                            'Coffee break at a cafe in Carmel-by-the-Sea.',
+                            'Dinner at a classic diner in Santa Barbara.'
+                        ],
+                        rooms: [
+                            { name: 'Hotel Pacific', description: 'Cozy boutique hotel near the beach.', price: '$250/night' },
+                            { name: 'The Lighthouse Inn', description: 'Rustic stay with ocean-facing rooms.', price: '$180/night' }
+                        ],
+                        attractions: [
+                            { name: 'Golden Gate Bridge', description: 'A must-see landmark.', imageUrl: 'https://placehold.co/400x250/667EEA/FFFFFF?text=Golden+Gate' },
+                            { name: 'Big Sur', description: 'Famous for its rugged coastline.', imageUrl: 'https://placehold.co/400x250/A3B8FF/FFFFFF?text=Big+Sur' },
+                            { name: 'Santa Monica Pier', description: 'Iconic beachfront amusement park.', imageUrl: 'https://placehold.co/400x250/C7D2FE/FFFFFF?text=Santa+Monica' }
+                        ]
+                    };
+                } else if (standardizedStart.includes('new york') && standardizedDest.includes('boston')) {
+                    return {
+                        route: 'Take the I-95 North, a direct and efficient route through major cities.',
+                        foodAndRest: [
+                            'Stop for a quick bite in New Haven, Connecticut.',
+                            'Rest at a service area in Rhode Island.'
+                        ],
+                        rooms: [
+                            { name: 'The Beacon Hotel', description: 'Conveniently located near the city center.', price: '$300/night' },
+                            { name: 'Cityside Inn', description: 'Affordable and comfortable room.', price: '$150/night' }
+                        ],
+                        attractions: [
+                            { name: 'Statue of Liberty', description: 'See the famous landmark before you leave.', imageUrl: 'https://placehold.co/400x250/F87171/FFFFFF?text=Statue+of+Liberty' },
+                            { name: 'Freedom Trail', description: 'A historic path in Boston.', imageUrl: 'https://placehold.co/400x250/DC2626/FFFFFF?text=Freedom+Trail' },
+                            { name: 'Fenway Park', description: 'Catch a game if you can!', imageUrl: 'https://placehold.co/400x250/9CA3AF/FFFFFF?text=Fenway+Park' }
+                        ]
+                    };
+                } else {
+                    // Default mock data for any other route
+                    return {
+                        route: `A scenic route from ${start} to ${destination} with plenty of interesting stops along the way.`,
+                        foodAndRest: [
+                            `A well-rated cafe in a town halfway to your destination.`,
+                            `A perfect spot for a scenic viewpoint and a quick rest.`
+                        ],
+                        rooms: [
+                            { name: 'City Center Hotel', description: 'A great place to rest for the night.', price: '$200/night' },
+                            { name: 'Traveler\'s Rest Motel', description: 'Simple and affordable.', price: '$100/night' }
+                        ],
+                        attractions: [
+                            { name: 'Main City Museum', description: 'Explore local history and art.', imageUrl: 'https://placehold.co/400x250/E5E7EB/4B5563?text=Museum' },
+                            { name: 'Central Park', description: 'Enjoy some fresh air and green space.', imageUrl: 'https://placehold.co/400x250/D1D5DB/4B5563?text=Park' }
+                        ]
+                    };
+                }
+            }
+        });
+    </script>
+</body>
+</html>
